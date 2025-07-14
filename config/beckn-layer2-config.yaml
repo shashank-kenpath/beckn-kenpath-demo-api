@@ -1,0 +1,132 @@
+openapi: 3.0.0
+info:
+  title: Beckn – Agriculture Domain
+  description: Layer-2 rules for “agriculture” domain (fresh produce, farm inputs & services)
+  version: 1.1.0
+
+# ----  authentication headers  ----
+security:
+  - SubscriberAuth: []
+  - GatewaySubscriberAuthNew: []
+
+paths:
+  # ----------  BAP ➜ BPP requests ----------
+  /search:
+    post:
+      tags: [Beckn Provider Platform (BPP), Beckn Gateway (BG)]
+      description: Discover produce / ag-services
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  allOf:
+                    - $ref: '#/components/schemas/Context'
+                    - properties:
+                        action:
+                          enum: [search]
+                message:
+                  type: object
+                  properties:
+                    intent:
+                      $ref: '#/components/schemas/Intent'
+              required: [context, message]
+      responses:
+        default: { $ref: '#/components/responses/AckResponse' }
+
+  /select:
+    post:
+      tags: [Beckn Provider Platform (BPP)]
+      description: Cart creation with selected items
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  allOf:
+                    - $ref: '#/components/schemas/Context'
+                    - properties: { action: { enum: [select] } }
+                message:
+                  type: object
+                  properties:
+                    order:
+                      $ref: '#/components/schemas/Order'
+              required: [context, message]
+      responses:
+        default: { $ref: '#/components/responses/AckResponse' }
+
+  # (…repeat for /init, /confirm, /status, /track, /cancel, /update, /rating, /support …)
+
+  # ----------  BPP ➜ BAP callbacks ----------
+  /on_search:
+    post:
+      tags: [Beckn App Platform (BAP), Beckn Gateway (BG)]
+      description: Catalog of matching providers/items
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  allOf:
+                    - $ref: '#/components/schemas/Context'
+                    - properties: { action: { enum: [on_search] } }
+                message:
+                  type: object
+                  properties:
+                    catalog:
+                      $ref: '#/components/schemas/Catalog'
+              required: [context, message]
+      responses:
+        default: { $ref: '#/components/responses/AckResponse' }
+
+  # (…repeat for /on_select … /on_support)
+
+# ---- reusable response shortcut ----
+components:
+  responses:
+    AckResponse:
+      description: Acknowledgement of message receipt
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: object
+                properties:
+                  ack:
+                    $ref: '#/components/schemas/Ack'
+            required: [message]
+
+  securitySchemes:
+    SubscriberAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: |
+        Signature of message body using subscriber’s public key
+        `Authorization: Signature keyId="{subscriber_id}|{key_id}|ed25519", ...`
+    GatewaySubscriberAuthNew:
+      type: apiKey
+      in: header
+      name: X-Gateway-Authorization
+      description: Signature of body + Authorization header using BG key
+
+  # ----  Beckn core schemas are re-used via $ref  ----
+  schemas:
+    Context:      { $ref: 'https://raw.githubusercontent.com/beckn/beckn-protocol-specifications/v1.1.0/schema/core/Context.json' }
+    Intent:       { $ref: 'https://raw.githubusercontent.com/beckn/beckn-protocol-specifications/v1.1.0/schema/core/Intent.json' }
+    Order:        { $ref: 'https://raw.githubusercontent.com/beckn/beckn-protocol-specifications/v1.1.0/schema/core/Order.json' }
+    Catalog:      { $ref: 'https://raw.githubusercontent.com/beckn/beckn-protocol-specifications/v1.1.0/schema/core/Catalog.json' }
+    Ack:          { $ref: 'https://raw.githubusercontent.com/beckn/beckn-protocol-specifications/v1.1.0/schema/core/Ack.json' }
+    # --- Domain-specific enums or tags go below ---
+    ProduceGrade:
+      description: BIS produce-quality grades
+      type: string
+      enum: [A, B, C, Organic]

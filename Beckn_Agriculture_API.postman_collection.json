@@ -1,0 +1,538 @@
+{
+  "info": {
+    "name": "Beckn Agriculture API",
+    "description": "Complete API collection for Beckn-enabled Agriculture Marketplace with PostgreSQL database integration",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "bap_id",
+      "value": "kenpath-agriculture-bap",
+      "type": "string"
+    },
+    {
+      "key": "bpp_id",
+      "value": "kenpath-agriculture-bpp",
+      "type": "string"
+    },
+    {
+      "key": "transaction_id",
+      "value": "{{$randomUUID}}",
+      "type": "string"
+    },
+    {
+      "key": "message_id",
+      "value": "{{$randomUUID}}",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health & System",
+      "description": "System health and basic information endpoints",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Check API server health and database connection status"
+          },
+          "response": [
+            {
+              "name": "Health Check Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/health",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["health"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": \"healthy\",\n  \"database\": \"connected\",\n  \"timestamp\": \"2024-01-20T10:30:00.000Z\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Categories & Taxonomy",
+      "description": "Product and service category management",
+      "item": [
+        {
+          "name": "Get All Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["categories"]
+            },
+            "description": "Retrieve all product and service categories"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Product Categories Only",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categories?type=product",
+              "host": ["{{baseUrl}}"],
+              "path": ["categories"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "product",
+                  "description": "Filter by category type"
+                }
+              ]
+            },
+            "description": "Retrieve only product categories"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Service Categories Only",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categories?type=service",
+              "host": ["{{baseUrl}}"],
+              "path": ["categories"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "service",
+                  "description": "Filter by category type"
+                }
+              ]
+            },
+            "description": "Retrieve only service categories"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Beckn Protocol Endpoints",
+      "description": "Core Beckn protocol implementation endpoints",
+      "item": [
+        {
+          "name": "Search - Basic Product Search",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"agriculture\",\n    \"action\": \"search\",\n    \"version\": \"1.1.0\",\n    \"bap_id\": \"{{bap_id}}\",\n    \"bap_uri\": \"https://bap-client.kenpath.ai\",\n    \"bpp_id\": \"{{bpp_id}}\",\n    \"bpp_uri\": \"https://bpp-client.kenpath.ai\",\n    \"transaction_id\": \"{{transaction_id}}\",\n    \"message_id\": \"{{message_id}}\",\n    \"timestamp\": \"{{$isoTimestamp}}\",\n    \"ttl\": \"PT30M\"\n  },\n  \"message\": {\n    \"intent\": {\n      \"item\": {\n        \"descriptor\": {\n          \"name\": \"tomato\"\n        }\n      }\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/search",
+              "host": ["{{baseUrl}}"],
+              "path": ["search"]
+            },
+            "description": "Search for products by name (e.g., tomato)"
+          },
+          "response": []
+        },
+        {
+          "name": "Search - Category Based Search",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"agriculture\",\n    \"action\": \"search\",\n    \"version\": \"1.1.0\",\n    \"bap_id\": \"{{bap_id}}\",\n    \"bap_uri\": \"https://bap-client.kenpath.ai\",\n    \"bpp_id\": \"{{bpp_id}}\",\n    \"bpp_uri\": \"https://bpp-client.kenpath.ai\",\n    \"transaction_id\": \"{{transaction_id}}\",\n    \"message_id\": \"{{message_id}}\",\n    \"timestamp\": \"{{$isoTimestamp}}\",\n    \"ttl\": \"PT30M\"\n  },\n  \"message\": {\n    \"intent\": {\n      \"category\": {\n        \"descriptor\": {\n          \"code\": \"VEGETABLES\"\n        }\n      }\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/search",
+              "host": ["{{baseUrl}}"],
+              "path": ["search"]
+            },
+            "description": "Search for products by category (VEGETABLES, FRUITS, GRAINS, etc.)"
+          },
+          "response": []
+        },
+        {
+          "name": "Search - Location Based Search",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"agriculture\",\n    \"action\": \"search\",\n    \"version\": \"1.1.0\",\n    \"bap_id\": \"{{bap_id}}\",\n    \"bap_uri\": \"https://bap-client.kenpath.ai\",\n    \"bpp_id\": \"{{bpp_id}}\",\n    \"bpp_uri\": \"https://bpp-client.kenpath.ai\",\n    \"transaction_id\": \"{{transaction_id}}\",\n    \"message_id\": \"{{message_id}}\",\n    \"timestamp\": \"{{$isoTimestamp}}\",\n    \"ttl\": \"PT30M\"\n  },\n  \"message\": {\n    \"intent\": {\n      \"fulfillment\": {\n        \"end\": {\n          \"location\": {\n            \"city\": \"Bharuch\"\n          }\n        }\n      }\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/search",
+              "host": ["{{baseUrl}}"],
+              "path": ["search"]
+            },
+            "description": "Search for products/services by location (city-based)"
+          },
+          "response": []
+        },
+        {
+          "name": "Search - Service Search",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"agriculture\",\n    \"action\": \"search\",\n    \"version\": \"1.1.0\",\n    \"bap_id\": \"{{bap_id}}\",\n    \"bap_uri\": \"https://bap-client.kenpath.ai\",\n    \"bpp_id\": \"{{bpp_id}}\",\n    \"bpp_uri\": \"https://bpp-client.kenpath.ai\",\n    \"transaction_id\": \"{{transaction_id}}\",\n    \"message_id\": \"{{message_id}}\",\n    \"timestamp\": \"{{$isoTimestamp}}\",\n    \"ttl\": \"PT30M\"\n  },\n  \"message\": {\n    \"intent\": {\n      \"category\": {\n        \"descriptor\": {\n          \"code\": \"CONSULTATION\"\n        }\n      }\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/search",
+              "host": ["{{baseUrl}}"],
+              "path": ["search"]
+            },
+            "description": "Search for agricultural services (CONSULTATION, EQUIPMENT_RENTAL, PROCESSING)"
+          },
+          "response": []
+        },
+        {
+          "name": "Search - Combined Filters",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"agriculture\",\n    \"action\": \"search\",\n    \"version\": \"1.1.0\",\n    \"bap_id\": \"{{bap_id}}\",\n    \"bap_uri\": \"https://bap-client.kenpath.ai\",\n    \"bpp_id\": \"{{bpp_id}}\",\n    \"bpp_uri\": \"https://bpp-client.kenpath.ai\",\n    \"transaction_id\": \"{{transaction_id}}\",\n    \"message_id\": \"{{message_id}}\",\n    \"timestamp\": \"{{$isoTimestamp}}\",\n    \"ttl\": \"PT30M\"\n  },\n  \"message\": {\n    \"intent\": {\n      \"item\": {\n        \"descriptor\": {\n          \"name\": \"organic\"\n        }\n      },\n      \"category\": {\n        \"descriptor\": {\n          \"code\": \"VEGETABLES\"\n        }\n      },\n      \"fulfillment\": {\n        \"end\": {\n          \"location\": {\n            \"city\": \"Bharuch\"\n          }\n        }\n      }\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/search",
+              "host": ["{{baseUrl}}"],
+              "path": ["search"]
+            },
+            "description": "Search with multiple filters - organic vegetables in Bharuch"
+          },
+          "response": []
+        },
+        {
+          "name": "Search - Query Parameters",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"agriculture\",\n    \"action\": \"search\",\n    \"version\": \"1.1.0\",\n    \"bap_id\": \"{{bap_id}}\",\n    \"transaction_id\": \"{{transaction_id}}\",\n    \"message_id\": \"{{message_id}}\",\n    \"timestamp\": \"{{$isoTimestamp}}\"\n  },\n  \"message\": {\n    \"intent\": {}\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/search?query=mango&category=FRUITS&location=Bangalore Rural&organic=true&limit=5",
+              "host": ["{{baseUrl}}"],
+              "path": ["search"],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "mango",
+                  "description": "Search term"
+                },
+                {
+                  "key": "category",
+                  "value": "FRUITS",
+                  "description": "Product/service category"
+                },
+                {
+                  "key": "location",
+                  "value": "Bangalore Rural",
+                  "description": "City name"
+                },
+                {
+                  "key": "organic",
+                  "value": "true",
+                  "description": "Filter for organic products"
+                },
+                {
+                  "key": "limit",
+                  "value": "5",
+                  "description": "Maximum results"
+                }
+              ]
+            },
+            "description": "Search using query parameters (alternative to Beckn message format)"
+          },
+          "response": []
+        },
+        {
+          "name": "Select - Item Selection",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"agriculture\",\n    \"action\": \"select\",\n    \"version\": \"1.1.0\",\n    \"bap_id\": \"{{bap_id}}\",\n    \"bap_uri\": \"https://bap-client.kenpath.ai\",\n    \"bpp_id\": \"{{bpp_id}}\",\n    \"bpp_uri\": \"https://bpp-client.kenpath.ai\",\n    \"transaction_id\": \"{{transaction_id}}\",\n    \"message_id\": \"{{message_id}}\",\n    \"timestamp\": \"{{$isoTimestamp}}\",\n    \"ttl\": \"PT30M\"\n  },\n  \"message\": {\n    \"order\": {\n      \"provider\": {\n        \"id\": \"FARMER_001\"\n      },\n      \"items\": [\n        {\n          \"id\": \"PROD_001\",\n          \"quantity\": {\n            \"count\": 5\n          },\n          \"tags\": [\n            {\n              \"descriptor\": {\n                \"code\": \"type\"\n              },\n              \"value\": \"product\"\n            }\n          ]\n        }\n      ],\n      \"fulfillments\": [\n        {\n          \"end\": {\n            \"location\": {\n              \"gps\": \"21.7051,72.9958\",\n              \"address\": \"Village Gandhipuram, Dist. Bharuch, Gujarat\"\n            }\n          }\n        }\n      ]\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/select",
+              "host": ["{{baseUrl}}"],
+              "path": ["select"]
+            },
+            "description": "Select items and get price quote (use item IDs from search results)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Direct Data Access",
+      "description": "Direct database query endpoints for development and testing",
+      "item": [
+        {
+          "name": "Get Providers by City",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/providers/Bharuch",
+              "host": ["{{baseUrl}}"],
+              "path": ["providers", "Bharuch"]
+            },
+            "description": "Get all providers (farmers) in a specific city"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Providers by City and State",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/providers/Bharuch?state=Gujarat",
+              "host": ["{{baseUrl}}"],
+              "path": ["providers", "Bharuch"],
+              "query": [
+                {
+                  "key": "state",
+                  "value": "Gujarat",
+                  "description": "Filter by state"
+                }
+              ]
+            },
+            "description": "Get providers in a specific city and state"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Product by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/item/PROD_001?type=product",
+              "host": ["{{baseUrl}}"],
+              "path": ["item", "PROD_001"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "product",
+                  "description": "Item type (product or service)"
+                }
+              ]
+            },
+            "description": "Get detailed information about a specific product"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Service by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/item/SERV_001?type=service",
+              "host": ["{{baseUrl}}"],
+              "path": ["item", "SERV_001"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "service",
+                  "description": "Item type (product or service)"
+                }
+              ]
+            },
+            "description": "Get detailed information about a specific service"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Webhook Endpoints",
+      "description": "Legacy webhook endpoints for BAP communication",
+      "item": [
+        {
+          "name": "Webhook GET",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/webhook",
+              "host": ["{{baseUrl}}"],
+              "path": ["webhook"]
+            },
+            "description": "Legacy webhook endpoint (GET method)"
+          },
+          "response": []
+        },
+        {
+          "name": "Webhook POST",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"context\": {\n    \"domain\": \"agriculture\",\n    \"action\": \"search\",\n    \"version\": \"1.1.0\",\n    \"transaction_id\": \"{{transaction_id}}\",\n    \"message_id\": \"{{message_id}}\",\n    \"timestamp\": \"{{$isoTimestamp}}\"\n  },\n  \"message\": {\n    \"intent\": {\n      \"item\": {\n        \"descriptor\": {\n          \"name\": \"test\"\n        }\n      }\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/webhook",
+              "host": ["{{baseUrl}}"],
+              "path": ["webhook"]
+            },
+            "description": "Legacy webhook endpoint (POST method)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Sample Data IDs",
+      "description": "Reference collection with sample data IDs for testing",
+      "item": [
+        {
+          "name": "Sample Farmer IDs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Reference: FARMER_001 (Ramesh Kumar, Bharuch, Gujarat), FARMER_002 (Sunita Devi, Jaipur, Rajasthan), FARMER_003 (Manjunath Reddy, Bangalore Rural, Karnataka)"
+          },
+          "response": []
+        },
+        {
+          "name": "Sample Product IDs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Reference: PROD_001 (Organic Tomatoes), PROD_002 (Basmati Rice), PROD_003 (Fresh Mangoes), PROD_004 (Tomato Seeds)"
+          },
+          "response": []
+        },
+        {
+          "name": "Sample Service IDs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Reference: SERV_001 (Organic Farming Consultation), SERV_002 (Tractor with Plowing Equipment), SERV_003 (Fruit Processing & Packaging)"
+          },
+          "response": []
+        },
+        {
+          "name": "Sample Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Products: CROPS, GRAINS, VEGETABLES, FRUITS, SEEDS, TOOLS. Services: CONSULTATION, EQUIPMENT_RENTAL, FIELD_SERVICES, PROCESSING"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Generate new UUIDs for each request",
+          "pm.collectionVariables.set('transaction_id', pm.variables.replaceIn('{{$randomUUID}}'));",
+          "pm.collectionVariables.set('message_id', pm.variables.replaceIn('{{$randomUUID}}'));"
+        ]
+      }
+    }
+  ]
+} 
