@@ -345,4 +345,4 @@ For technical support or questions:
 
 ---
 
-**Built with ❤️ for the Beckn Agriculture Network** 
+**Built with ❤️ for the Beckn Agriculture Network**
