@@ -1,0 +1,591 @@
+openapi: 3.0.0
+info:
+  title: Beckn – AgriStack OAN Domain
+  description: Layer-2 rules for "agristack:oan" domain (Open Agriculture Network)
+  version: 1.1.0
+
+# ----  authentication headers  ----
+security:
+  - SubscriberAuth: []
+  - GatewaySubscriberAuthNew: []
+
+paths:
+  # ----------  BAP ➜ BPP requests ----------
+  /search:
+    post:
+      tags: [Beckn Provider Platform (BPP), Beckn Gateway (BG)]
+      description: Discover agristack products and services
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  allOf:
+                    - $ref: '#/components/schemas/Context'
+                    - properties:
+                        action:
+                          enum: [search]
+                        domain:
+                          enum: [agristack:oan]
+                message:
+                  type: object
+                  properties:
+                    intent:
+                      $ref: '#/components/schemas/Intent'
+              required: [context, message]
+      responses:
+        default: { $ref: '#/components/responses/AckResponse' }
+
+  /select:
+    post:
+      tags: [Beckn Provider Platform (BPP)]
+      description: Cart creation with selected agristack items
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  allOf:
+                    - $ref: '#/components/schemas/Context'
+                    - properties: 
+                        action: { enum: [select] }
+                        domain: { enum: [agristack:oan] }
+                message:
+                  type: object
+                  properties:
+                    order:
+                      $ref: '#/components/schemas/Order'
+              required: [context, message]
+      responses:
+        default: { $ref: '#/components/responses/AckResponse' }
+
+  /init:
+    post:
+      tags: [Beckn Provider Platform (BPP)]
+      description: Initialize order for agristack products/services
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  allOf:
+                    - $ref: '#/components/schemas/Context'
+                    - properties: { action: { enum: [init] }, domain: { enum: [agristack:oan] } }
+                message:
+                  type: object
+                  properties:
+                    order:
+                      $ref: '#/components/schemas/Order'
+              required: [context, message]
+      responses:
+        default: { $ref: '#/components/responses/AckResponse' }
+
+  /confirm:
+    post:
+      tags: [Beckn Provider Platform (BPP)]
+      description: Confirm order for agristack products/services
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  allOf:
+                    - $ref: '#/components/schemas/Context'
+                    - properties: { action: { enum: [confirm] }, domain: { enum: [agristack:oan] } }
+                message:
+                  type: object
+                  properties:
+                    order:
+                      $ref: '#/components/schemas/Order'
+              required: [context, message]
+      responses:
+        default: { $ref: '#/components/responses/AckResponse' }
+
+  /status:
+    post:
+      tags: [Beckn Provider Platform (BPP)]
+      description: Get order status for agristack products/services
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  allOf:
+                    - $ref: '#/components/schemas/Context'
+                    - properties: { action: { enum: [status] }, domain: { enum: [agristack:oan] } }
+                message:
+                  type: object
+                  properties:
+                    order_id:
+                      type: string
+              required: [context, message]
+      responses:
+        default: { $ref: '#/components/responses/AckResponse' }
+
+  /track:
+    post:
+      tags: [Beckn Provider Platform (BPP)]
+      description: Track fulfillment for agristack products/services
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  allOf:
+                    - $ref: '#/components/schemas/Context'
+                    - properties: { action: { enum: [track] }, domain: { enum: [agristack:oan] } }
+                message:
+                  type: object
+                  properties:
+                    order_id:
+                      type: string
+              required: [context, message]
+      responses:
+        default: { $ref: '#/components/responses/AckResponse' }
+
+  /cancel:
+    post:
+      tags: [Beckn Provider Platform (BPP)]
+      description: Cancel order for agristack products/services
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  allOf:
+                    - $ref: '#/components/schemas/Context'
+                    - properties: { action: { enum: [cancel] }, domain: { enum: [agristack:oan] } }
+                message:
+                  type: object
+                  properties:
+                    order_id:
+                      type: string
+                    cancellation_reason_id:
+                      type: string
+              required: [context, message]
+      responses:
+        default: { $ref: '#/components/responses/AckResponse' }
+
+  /update:
+    post:
+      tags: [Beckn Provider Platform (BPP)]
+      description: Update order for agristack products/services
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  allOf:
+                    - $ref: '#/components/schemas/Context'
+                    - properties: { action: { enum: [update] }, domain: { enum: [agristack:oan] } }
+                message:
+                  type: object
+                  properties:
+                    order:
+                      $ref: '#/components/schemas/Order'
+              required: [context, message]
+      responses:
+        default: { $ref: '#/components/responses/AckResponse' }
+
+  /rating:
+    post:
+      tags: [Beckn Provider Platform (BPP)]
+      description: Rate agristack products/services
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  allOf:
+                    - $ref: '#/components/schemas/Context'
+                    - properties: { action: { enum: [rating] }, domain: { enum: [agristack:oan] } }
+                message:
+                  type: object
+                  properties:
+                    ratings:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Rating'
+              required: [context, message]
+      responses:
+        default: { $ref: '#/components/responses/AckResponse' }
+
+  /support:
+    post:
+      tags: [Beckn Provider Platform (BPP)]
+      description: Support for agristack products/services
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  allOf:
+                    - $ref: '#/components/schemas/Context'
+                    - properties: { action: { enum: [support] }, domain: { enum: [agristack:oan] } }
+                message:
+                  type: object
+                  properties:
+                    support:
+                      $ref: '#/components/schemas/Support'
+              required: [context, message]
+      responses:
+        default: { $ref: '#/components/responses/AckResponse' }
+
+  # ----------  BPP ➜ BAP callbacks ----------
+  /on_search:
+    post:
+      tags: [Beckn App Platform (BAP), Beckn Gateway (BG)]
+      description: Catalog of matching agristack providers/items
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  allOf:
+                    - $ref: '#/components/schemas/Context'
+                    - properties: { action: { enum: [on_search] }, domain: { enum: [agristack:oan] } }
+                message:
+                  type: object
+                  properties:
+                    catalog:
+                      $ref: '#/components/schemas/Catalog'
+              required: [context, message]
+      responses:
+        default: { $ref: '#/components/responses/AckResponse' }
+
+  /on_select:
+    post:
+      tags: [Beckn App Platform (BAP)]
+      description: Quote for selected agristack items
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  allOf:
+                    - $ref: '#/components/schemas/Context'
+                    - properties: { action: { enum: [on_select] }, domain: { enum: [agristack:oan] } }
+                message:
+                  type: object
+                  properties:
+                    order:
+                      $ref: '#/components/schemas/Order'
+              required: [context, message]
+      responses:
+        default: { $ref: '#/components/responses/AckResponse' }
+
+  /on_init:
+    post:
+      tags: [Beckn App Platform (BAP)]
+      description: Terms for agristack order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  allOf:
+                    - $ref: '#/components/schemas/Context'
+                    - properties: { action: { enum: [on_init] }, domain: { enum: [agristack:oan] } }
+                message:
+                  type: object
+                  properties:
+                    order:
+                      $ref: '#/components/schemas/Order'
+              required: [context, message]
+      responses:
+        default: { $ref: '#/components/responses/AckResponse' }
+
+  /on_confirm:
+    post:
+      tags: [Beckn App Platform (BAP)]
+      description: Confirmed agristack order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  allOf:
+                    - $ref: '#/components/schemas/Context'
+                    - properties: { action: { enum: [on_confirm] }, domain: { enum: [agristack:oan] } }
+                message:
+                  type: object
+                  properties:
+                    order:
+                      $ref: '#/components/schemas/Order'
+              required: [context, message]
+      responses:
+        default: { $ref: '#/components/responses/AckResponse' }
+
+  /on_status:
+    post:
+      tags: [Beckn App Platform (BAP)]
+      description: Status update for agristack order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  allOf:
+                    - $ref: '#/components/schemas/Context'
+                    - properties: { action: { enum: [on_status] }, domain: { enum: [agristack:oan] } }
+                message:
+                  type: object
+                  properties:
+                    order:
+                      $ref: '#/components/schemas/Order'
+              required: [context, message]
+      responses:
+        default: { $ref: '#/components/responses/AckResponse' }
+
+  /on_track:
+    post:
+      tags: [Beckn App Platform (BAP)]
+      description: Tracking update for agristack fulfillment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  allOf:
+                    - $ref: '#/components/schemas/Context'
+                    - properties: { action: { enum: [on_track] }, domain: { enum: [agristack:oan] } }
+                message:
+                  type: object
+                  properties:
+                    tracking:
+                      $ref: '#/components/schemas/Tracking'
+              required: [context, message]
+      responses:
+        default: { $ref: '#/components/responses/AckResponse' }
+
+  /on_cancel:
+    post:
+      tags: [Beckn App Platform (BAP)]
+      description: Cancellation confirmation for agristack order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  allOf:
+                    - $ref: '#/components/schemas/Context'
+                    - properties: { action: { enum: [on_cancel] }, domain: { enum: [agristack:oan] } }
+                message:
+                  type: object
+                  properties:
+                    order:
+                      $ref: '#/components/schemas/Order'
+              required: [context, message]
+      responses:
+        default: { $ref: '#/components/responses/AckResponse' }
+
+  /on_update:
+    post:
+      tags: [Beckn App Platform (BAP)]
+      description: Update confirmation for agristack order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  allOf:
+                    - $ref: '#/components/schemas/Context'
+                    - properties: { action: { enum: [on_update] }, domain: { enum: [agristack:oan] } }
+                message:
+                  type: object
+                  properties:
+                    order:
+                      $ref: '#/components/schemas/Order'
+              required: [context, message]
+      responses:
+        default: { $ref: '#/components/responses/AckResponse' }
+
+  /on_rating:
+    post:
+      tags: [Beckn App Platform (BAP)]
+      description: Rating confirmation for agristack products/services
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  allOf:
+                    - $ref: '#/components/schemas/Context'
+                    - properties: { action: { enum: [on_rating] }, domain: { enum: [agristack:oan] } }
+                message:
+                  type: object
+                  properties:
+                    ratings:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Rating'
+              required: [context, message]
+      responses:
+        default: { $ref: '#/components/responses/AckResponse' }
+
+  /on_support:
+    post:
+      tags: [Beckn App Platform (BAP)]
+      description: Support response for agristack products/services
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  allOf:
+                    - $ref: '#/components/schemas/Context'
+                    - properties: { action: { enum: [on_support] }, domain: { enum: [agristack:oan] } }
+                message:
+                  type: object
+                  properties:
+                    support:
+                      $ref: '#/components/schemas/Support'
+              required: [context, message]
+      responses:
+        default: { $ref: '#/components/responses/AckResponse' }
+
+# ---- reusable response shortcut ----
+components:
+  responses:
+    AckResponse:
+      description: Acknowledgement of message receipt
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: object
+                properties:
+                  ack:
+                    $ref: '#/components/schemas/Ack'
+            required: [message]
+
+  securitySchemes:
+    SubscriberAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: |
+        Signature of message body using subscriber's public key
+        `Authorization: Signature keyId="{subscriber_id}|{key_id}|ed25519", ...`
+    GatewaySubscriberAuthNew:
+      type: apiKey
+      in: header
+      name: X-Gateway-Authorization
+      description: Signature of body + Authorization header using BG key
+
+  # ----  Beckn core schemas are re-used via $ref  ----
+  schemas:
+    Context:      { $ref: 'https://raw.githubusercontent.com/beckn/beckn-protocol-specifications/v1.1.0/schema/core/Context.json' }
+    Intent:       { $ref: 'https://raw.githubusercontent.com/beckn/beckn-protocol-specifications/v1.1.0/schema/core/Intent.json' }
+    Order:        { $ref: 'https://raw.githubusercontent.com/beckn/beckn-protocol-specifications/v1.1.0/schema/core/Order.json' }
+    Catalog:      { $ref: 'https://raw.githubusercontent.com/beckn/beckn-protocol-specifications/v1.1.0/schema/core/Catalog.json' }
+    Ack:          { $ref: 'https://raw.githubusercontent.com/beckn/beckn-protocol-specifications/v1.1.0/schema/core/Ack.json' }
+    Rating:       { $ref: 'https://raw.githubusercontent.com/beckn/beckn-protocol-specifications/v1.1.0/schema/core/Rating.json' }
+    Support:      { $ref: 'https://raw.githubusercontent.com/beckn/beckn-protocol-specifications/v1.1.0/schema/core/Support.json' }
+    Tracking:     { $ref: 'https://raw.githubusercontent.com/beckn/beckn-protocol-specifications/v1.1.0/schema/core/Tracking.json' }
+
+    # --- AgriStack OAN specific enums and schemas ---
+    AgriCategory:
+      description: AgriStack OAN product/service categories
+      type: string
+      enum:
+        - VEGETABLES
+        - FRUITS
+        - GRAINS
+        - SEEDS
+        - TOOLS
+        - CONSULTATION
+        - EQUIPMENT_RENTAL
+        - FIELD_SERVICES
+        - PROCESSING
+
+    ProduceGrade:
+      description: AgriStack produce-quality grades
+      type: string
+      enum: [A, B, C, Organic, Premium, Standard]
+
+    OrganicCertification:
+      description: Organic certification types
+      type: string
+      enum: [NPOP, PGS, Javik, Jaivik, Organic]
+
+    ServiceType:
+      description: Types of agricultural services
+      type: string
+      enum: [on_site_service, home_delivery, pickup, remote_consultation]
+
+    # AgriStack specific item schema
+    AgriItem:
+      allOf:
+        - $ref: '#/components/schemas/Item'
+        - type: object
+          properties:
+            category_id:
+              $ref: '#/components/schemas/AgriCategory'
+            tags:
+              type: array
+              items:
+                type: object
+                properties:
+                  descriptor:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        enum: [product-metadata, service-metadata]
+                  list:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        descriptor:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                            name:
+                              type: string
+                        value:
+                          type: string

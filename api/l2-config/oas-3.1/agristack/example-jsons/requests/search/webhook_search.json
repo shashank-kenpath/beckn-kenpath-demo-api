@@ -1,0 +1,20 @@
+{
+  "context": {
+    "domain": "agristack:oan",
+    "action": "search",
+    "country": "IND",
+    "city": "std:080",
+    "core_version": "1.1.0",
+    "bap_id": "webhook-test-bap",
+    "bap_uri": "https://webhook-test.kenpath.ai",
+    "transaction_id": "txn-webhook-001",
+    "message_id": "msg-webhook-001",
+    "timestamp": "2024-01-15T12:00:00.000Z",
+    "ttl": "PT30M"
+  },
+  "search": "organic tomato",
+  "category": "VEGETABLES",
+  "location": "Bangalore",
+  "organic": true,
+  "limit": 10
+}

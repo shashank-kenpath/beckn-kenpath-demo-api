@@ -1,0 +1,121 @@
+{
+  "context": {
+    "domain": "agristack:oan",
+    "action": "on_search",
+    "country": "IND",
+    "city": "std:080",
+    "core_version": "1.1.0",
+    "bap_id": "agristack-bap",
+    "bap_uri": "https://agristack-bap.kenpath.ai",
+    "transaction_id": "txn-123456",
+    "message_id": "msg-789012",
+    "timestamp": "2024-01-15T10:31:00.000Z"
+  },
+  "message": {
+    "catalog": {
+      "descriptor": {
+        "name": "AgriStack OAN Products & Services Catalog",
+        "short_desc": "Discover fresh produce, farming equipment, and agristack services",
+        "long_desc": "A comprehensive marketplace for agristack products and services connecting farmers, suppliers, and buyers across India"
+      },
+      "providers": [
+        {
+          "id": "farmer-001",
+          "descriptor": {
+            "name": "Organic Farms Bangalore",
+            "short_desc": "Certified organic vegetables and fruits"
+          },
+          "locations": [
+            {
+              "id": "loc-001",
+              "city": "Bangalore",
+              "state": "Karnataka",
+              "country": "IND"
+            }
+          ],
+          "categories": [
+            {
+              "id": "VEGETABLES",
+              "descriptor": {
+                "code": "VEGETABLES",
+                "name": "Vegetables"
+              }
+            }
+          ],
+          "items": [
+            {
+              "id": "tomato-001",
+              "descriptor": {
+                "name": "Organic Tomatoes",
+                "short_desc": "Fresh organic tomatoes from local farms",
+                "long_desc": "Premium quality organic tomatoes grown without pesticides"
+              },
+              "category_ids": ["VEGETABLES"],
+              "location_ids": ["loc-001"],
+              "fulfillment_ids": ["fulfillment-001"],
+              "price": {
+                "currency": "INR",
+                "value": "25.00",
+                "maximum_value": "30.00"
+              },
+              "quantity": {
+                "available": {
+                  "count": 100
+                },
+                "maximum": {
+                  "count": 100
+                }
+              },
+              "tags": [
+                {
+                  "descriptor": {
+                    "code": "product-metadata",
+                    "name": "Product Metadata"
+                  },
+                  "list": [
+                    {
+                      "descriptor": {
+                        "code": "type",
+                        "name": "Type"
+                      },
+                      "value": "product"
+                    },
+                    {
+                      "descriptor": {
+                        "code": "organic",
+                        "name": "Organic"
+                      },
+                      "value": "yes"
+                    },
+                    {
+                      "descriptor": {
+                        "code": "variety",
+                        "name": "Variety"
+                      },
+                      "value": "Cherry Tomato"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "fulfillments": [
+            {
+              "id": "fulfillment-001",
+              "type": "home_delivery",
+              "agent": {
+                "person": {
+                  "name": "Organic Farms Bangalore"
+                },
+                "contact": {
+                  "phone": "+91-9876543210",
+                  "email": "contact@organicfarms.com"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

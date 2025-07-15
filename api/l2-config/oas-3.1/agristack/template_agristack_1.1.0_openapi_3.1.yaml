@@ -1,0 +1,419 @@
+openapi: 3.1.0
+info:
+  title: Beckn – AgriStack OAN Layer 2 Configuration
+  description: Layer-2 rules for "agristack:oan" domain (Open Agriculture Network)
+  version: 1.1.0
+
+security:
+  - SubscriberAuth: []
+  - GatewaySubscriberAuthNew: []
+
+paths:
+  /search:
+    post:
+      tags: [Beckn Provider Platform (BPP), Beckn Gateway (BG)]
+      description: Discover agristack products and services
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+      responses:
+        default:
+          $ref: '#/components/responses/AckResponse'
+
+  /on_search:
+    post:
+      tags: [Beckn App Platform (BAP), Beckn Gateway (BG)]
+      description: Catalog of matching agristack providers/items
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OnSearchRequest'
+      responses:
+        default:
+          $ref: '#/components/responses/AckResponse'
+
+  /webhook:
+    post:
+      tags: [Webhook API]
+      description: Webhook endpoint for agristack search with search parameter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookRequest'
+      responses:
+        default:
+          $ref: '#/components/responses/AckResponse'
+
+components:
+  securitySchemes:
+    SubscriberAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: |
+        Signature of message body using subscriber's public key
+        `Authorization: Signature keyId="{subscriber_id}|{key_id}|ed25519", ...`
+    GatewaySubscriberAuthNew:
+      type: apiKey
+      in: header
+      name: X-Gateway-Authorization
+      description: Signature of body + Authorization header using BG key
+
+  schemas:
+    Context:
+      type: object
+      properties:
+        domain:
+          type: string
+          enum: [agristack:oan]
+        country:
+          type: string
+        city:
+          type: string
+        action:
+          type: string
+        core_version:
+          type: string
+        bap_id:
+          type: string
+        bap_uri:
+          type: string
+        bpp_id:
+          type: string
+        bpp_uri:
+          type: string
+        transaction_id:
+          type: string
+        message_id:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        key:
+          type: string
+        ttl:
+          type: string
+      required: [domain, country, city, action, core_version, bap_id, bap_uri, transaction_id, message_id, timestamp]
+
+    SearchRequest:
+      type: object
+      properties:
+        context:
+          allOf:
+            - $ref: '#/components/schemas/Context'
+            - properties:
+                action:
+                  enum: [search]
+                domain:
+                  enum: [agristack:oan]
+        message:
+          type: object
+          properties:
+            intent:
+              $ref: '#/components/schemas/AgriIntent'
+          required: [intent]
+      required: [context, message]
+
+    OnSearchRequest:
+      type: object
+      properties:
+        context:
+          allOf:
+            - $ref: '#/components/schemas/Context'
+            - properties:
+                action:
+                  enum: [on_search]
+                domain:
+                  enum: [agristack:oan]
+        message:
+          type: object
+          properties:
+            catalog:
+              $ref: '#/components/schemas/AgriCatalog'
+          required: [catalog]
+      required: [context, message]
+
+    WebhookRequest:
+      type: object
+      properties:
+        context:
+          allOf:
+            - $ref: '#/components/schemas/Context'
+            - properties:
+                action:
+                  enum: [search]
+                domain:
+                  enum: [agristack:oan]
+        search:
+          type: string
+          description: Search query parameter for agristack products/services
+        category:
+          type: string
+          description: Category filter (VEGETABLES, FRUITS, etc.)
+        location:
+          type: string
+          description: Location filter
+        organic:
+          type: boolean
+          description: Organic certification filter
+        limit:
+          type: integer
+          description: Maximum number of results
+      required: [context]
+
+    AgriIntent:
+      type: object
+      properties:
+        item:
+          type: object
+          properties:
+            descriptor:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name of the agricultural product/service
+        category:
+          type: object
+          properties:
+            descriptor:
+              type: object
+              properties:
+                code:
+                  $ref: '#/components/schemas/AgriCategory'
+        fulfillment:
+          type: object
+          properties:
+            end:
+              type: object
+              properties:
+                location:
+                  type: object
+                  properties:
+                    city:
+                      type: string
+        provider:
+          type: object
+          properties:
+            id:
+              type: string
+      required: []
+
+    AgriCatalog:
+      type: object
+      properties:
+        descriptor:
+          type: object
+          properties:
+            name:
+              type: string
+              default: "AgriStack OAN Products & Services Catalog"
+            short_desc:
+              type: string
+              default: "Discover fresh produce, farming equipment, and agristack services"
+            long_desc:
+              type: string
+              default: "A comprehensive marketplace for agristack products and services connecting farmers, suppliers, and buyers across India"
+        providers:
+          type: array
+          items:
+            $ref: '#/components/schemas/AgriProvider'
+      required: [descriptor, providers]
+
+    AgriProvider:
+      type: object
+      properties:
+        id:
+          type: string
+        descriptor:
+          type: object
+          properties:
+            name:
+              type: string
+            short_desc:
+              type: string
+        locations:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              city:
+                type: string
+              state:
+                type: string
+              country:
+                type: string
+        categories:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                $ref: '#/components/schemas/AgriCategory'
+              descriptor:
+                type: object
+                properties:
+                  code:
+                    $ref: '#/components/schemas/AgriCategory'
+                  name:
+                    type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AgriItem'
+        fulfillments:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              type:
+                $ref: '#/components/schemas/ServiceType'
+              agent:
+                type: object
+                properties:
+                  person:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                  contact:
+                    type: object
+                    properties:
+                      phone:
+                        type: string
+                      email:
+                        type: string
+
+    AgriItem:
+      type: object
+      properties:
+        id:
+          type: string
+        descriptor:
+          type: object
+          properties:
+            name:
+              type: string
+            short_desc:
+              type: string
+            long_desc:
+              type: string
+            images:
+              type: array
+              items:
+                type: object
+                properties:
+                  url:
+                    type: string
+        category_ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/AgriCategory'
+        location_ids:
+          type: array
+          items:
+            type: string
+        fulfillment_ids:
+          type: array
+          items:
+            type: string
+        price:
+          type: object
+          properties:
+            currency:
+              type: string
+              default: "INR"
+            value:
+              type: string
+            maximum_value:
+              type: string
+        quantity:
+          type: object
+          properties:
+            available:
+              type: object
+              properties:
+                count:
+                  type: integer
+            maximum:
+              type: object
+              properties:
+                count:
+                  type: integer
+        tags:
+          type: array
+          items:
+            type: object
+            properties:
+              descriptor:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  name:
+                    type: string
+              list:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    descriptor:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        name:
+                          type: string
+                    value:
+                      type: string
+
+    AgriCategory:
+      description: AgriStack OAN product/service categories
+      type: string
+      enum:
+        - VEGETABLES
+        - FRUITS
+        - GRAINS
+        - SEEDS
+        - TOOLS
+        - CONSULTATION
+        - EQUIPMENT_RENTAL
+        - FIELD_SERVICES
+        - PROCESSING
+
+    ServiceType:
+      description: Types of agricultural services
+      type: string
+      enum:
+        - home_delivery
+        - on_site_service
+        - pickup
+        - remote_consultation
+
+  responses:
+    AckResponse:
+      description: Acknowledgement of message receipt
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: object
+                properties:
+                  ack:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        enum: [ACK, NACK]
+                required: [ack]
+            required: [message]

@@ -1,0 +1,211 @@
+{
+  "search_examples": [
+    {
+      "title": "Search for organic tomatoes in Bangalore",
+      "request": {
+        "context": {
+          "domain": "agristack:oan",
+          "action": "search",
+          "country": "IND",
+          "city": "std:080",
+          "core_version": "1.1.0",
+          "bap_id": "agristack-bap",
+          "bap_uri": "https://agristack-bap.kenpath.ai",
+          "transaction_id": "txn-123456",
+          "message_id": "msg-789012",
+          "timestamp": "2024-01-15T10:30:00.000Z"
+        },
+        "message": {
+          "intent": {
+            "item": {
+              "descriptor": {
+                "name": "tomato"
+              }
+            },
+            "category": {
+              "descriptor": {
+                "code": "VEGETABLES"
+              }
+            },
+            "fulfillment": {
+              "end": {
+                "location": {
+                  "city": "Bangalore"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Search for tractor rental services",
+      "request": {
+        "context": {
+          "domain": "agristack:oan",
+          "action": "search",
+          "country": "IND",
+          "city": "std:080",
+          "core_version": "1.1.0",
+          "bap_id": "agristack-bap",
+          "bap_uri": "https://agristack-bap.kenpath.ai",
+          "transaction_id": "txn-234567",
+          "message_id": "msg-890123",
+          "timestamp": "2024-01-15T11:00:00.000Z"
+        },
+        "message": {
+          "intent": {
+            "category": {
+              "descriptor": {
+                "code": "EQUIPMENT_RENTAL"
+              }
+            },
+            "fulfillment": {
+              "end": {
+                "location": {
+                  "city": "Mumbai"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Search for wheat seeds with organic certification",
+      "request": {
+        "context": {
+          "domain": "agristack:oan",
+          "action": "search",
+          "country": "IND",
+          "city": "std:080",
+          "core_version": "1.1.0",
+          "bap_id": "agristack-bap",
+          "bap_uri": "https://agristack-bap.kenpath.ai",
+          "transaction_id": "txn-345678",
+          "message_id": "msg-456789",
+          "timestamp": "2024-01-15T11:30:00.000Z"
+        },
+        "message": {
+          "intent": {
+            "item": {
+              "descriptor": {
+                "name": "wheat seeds"
+              }
+            },
+            "category": {
+              "descriptor": {
+                "code": "SEEDS"
+              }
+            },
+            "tags": [
+              {
+                "descriptor": {
+                  "code": "organic"
+                },
+                "list": [
+                  {
+                    "descriptor": {
+                      "code": "certification"
+                    },
+                    "value": "NPOP"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "select_examples": [
+    {
+      "title": "Select tomatoes for purchase",
+      "request": {
+        "context": {
+          "domain": "agristack:oan",
+          "action": "select",
+          "country": "IND",
+          "city": "std:080",
+          "core_version": "1.1.0",
+          "bap_id": "agristack-bap",
+          "bap_uri": "https://agristack-bap.kenpath.ai",
+          "transaction_id": "txn-123456",
+          "message_id": "msg-345678",
+          "timestamp": "2024-01-15T10:35:00.000Z"
+        },
+        "message": {
+          "order": {
+            "items": [
+              {
+                "id": "tomato-001",
+                "quantity": {
+                  "count": 5
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "title": "Select consultation service",
+      "request": {
+        "context": {
+          "domain": "agristack:oan",
+          "action": "select",
+          "country": "IND",
+          "city": "std:080",
+          "core_version": "1.1.0",
+          "bap_id": "agristack-bap",
+          "bap_uri": "https://agristack-bap.kenpath.ai",
+          "transaction_id": "txn-456789",
+          "message_id": "msg-567890",
+          "timestamp": "2024-01-15T12:00:00.000Z"
+        },
+        "message": {
+          "order": {
+            "items": [
+              {
+                "id": "consultation-001",
+                "quantity": {
+                  "count": 1
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "webhook_examples": [
+    {
+      "title": "Webhook search for organic produce",
+      "curl": "curl -X GET 'http://localhost:3001/webhook?search=organic&category=VEGETABLES&location=Bangalore'"
+    },
+    {
+      "title": "Webhook search with full context",
+      "curl": "curl -X POST 'http://localhost:3001/webhook' -H 'Content-Type: application/json' -d '{\"context\":{\"domain\":\"agristack:oan\",\"action\":\"search\",\"message_id\":\"test-msg-001\"},\"search\":\"wheat\"}'"
+    },
+    {
+      "title": "Webhook equipment rental search",
+      "curl": "curl -X GET 'http://localhost:3001/webhook?search=tractor&category=EQUIPMENT_RENTAL&location=Mumbai'"
+    }
+  ],
+  "error_examples": [
+    {
+      "title": "Item not available",
+      "error": {
+        "code": "ITEM_NOT_AVAILABLE",
+        "message": "The requested agricultural product/service is not available"
+      }
+    },
+    {
+      "title": "Location not serviceable",
+      "error": {
+        "code": "LOCATION_NOT_SERVICEABLE",
+        "message": "Service not available in the specified location"
+      }
+    }
+  ]
+}
