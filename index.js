@@ -472,7 +472,7 @@ app.get("/item/:id", async (req, res) => {
   }
 });
 
-res = {
+const staticAckResponse = {
   "message": {
     "ack": {
       "status": "ACK"
@@ -487,7 +487,7 @@ app.get("/webhook", async (req, res) => {
     await delay(1000);
     await forwardToBap(staticResponse, "webhook-get");
   })();
-  res.send(res);
+  res.send(staticAckResponse);
 
 });
 
