@@ -1,5 +1,5 @@
 /**
- * Beckn-enabled Agriculture API with Database Integration
+ * Beckn-enabled AgriStack OAN API with Database Integration
  * A dynamic API that connects to database for agriculture products and services
  */
 
@@ -46,7 +46,7 @@ async function buildDynamicResponse(reqBody = {}, searchResults = []) {
     timestamp: now.toISOString(),
     message_id: incomingCtx.message_id,
     transaction_id: incomingCtx.transaction_id ?? uuidv4(),
-    domain: incomingCtx.domain ?? "agriculture",
+    domain: incomingCtx.domain ?? "agristack:oan",
     version: incomingCtx.version ?? "1.1.0",
     bap_id: incomingCtx.bap_id ?? null,
     bap_uri: incomingCtx.bap_uri ?? null,
@@ -64,7 +64,7 @@ async function buildDynamicResponse(reqBody = {}, searchResults = []) {
         id: item.provider_id,
         descriptor: {
           name: item.provider_name,
-          short_desc: item.specialization || "Agricultural products and services",
+          short_desc: item.specialization || "AgriStack OAN products and services",
           images: [
             {
               url: `https://api.kenpath.ai/images/providers/${item.provider_id}.jpg`,
@@ -227,9 +227,9 @@ async function buildDynamicResponse(reqBody = {}, searchResults = []) {
       ack: { status: "ACK" },
       catalog: {
         descriptor: {
-          name: "Agriculture Products & Services Catalog",
-          short_desc: "Discover fresh produce, farming equipment, and agricultural services",
-          long_desc: "A comprehensive marketplace for agricultural products and services connecting farmers, suppliers, and buyers across India"
+          name: "AgriStack OAN Products & Services Catalog",
+          short_desc: "Discover fresh produce, farming equipment, and agristack services",
+          long_desc: "A comprehensive marketplace for agristack products and services connecting farmers, suppliers, and buyers across India"
         },
         providers: Array.from(providerMap.values())
       }
@@ -480,7 +480,7 @@ const staticAckResponse = {
   }
 }
 
-// Enhanced webhook routes with search functionality
+// Enhanced webhook routes with search functionality and proper Beckn context
 app.get("/webhook", async (req, res) => {
   try {
     if (!dbConnected) {
@@ -512,8 +512,26 @@ app.get("/webhook", async (req, res) => {
       searchResults = await dbService.search({ limit: 20 });
     }
 
-    // Build response with search results
-    const response = await buildDynamicResponse({}, searchResults);
+    // Create proper Beckn context for webhook response
+    const now = new Date();
+    const webhookContext = {
+      domain: "agristack:oan",
+      action: "on_search",
+      country: "IND",
+      city: "std:080",
+      core_version: "1.1.0",
+      bap_id: "webhook-test-bap",
+      bap_uri: "https://webhook-test.kenpath.ai",
+      bpp_id: "kenpath-agriculture-bpp",
+      bpp_uri: "https://bpp-client.kenpath.ai",
+      transaction_id: uuidv4(),
+      message_id: uuidv4(),
+      timestamp: now.toISOString(),
+      ttl: "PT30M"
+    };
+
+    // Build response with search results and proper context
+    const response = await buildDynamicResponse({ context: webhookContext }, searchResults);
     
     // Send immediate ACK
     res.json(staticAckResponse);
@@ -561,8 +579,26 @@ app.post("/webhook", async (req, res) => {
       searchResults = await dbService.search({ limit: 20 });
     }
 
+    // Use provided context or create default
+    const now = new Date();
+    const context = req.body.context || {
+      domain: "agristack:oan",
+      action: "on_search",
+      country: "IND",
+      city: "std:080",
+      core_version: "1.1.0",
+      bap_id: "webhook-test-bap",
+      bap_uri: "https://webhook-test.kenpath.ai",
+      bpp_id: "kenpath-agriculture-bpp",
+      bpp_uri: "https://bpp-client.kenpath.ai",
+      transaction_id: uuidv4(),
+      message_id: uuidv4(),
+      timestamp: now.toISOString(),
+      ttl: "PT30M"
+    };
+
     // Build response with search results
-    const response = await buildDynamicResponse(req.body, searchResults);
+    const response = await buildDynamicResponse({ context }, searchResults);
     
     // Send immediate ACK
     res.json({ received: true, body: req.body });
