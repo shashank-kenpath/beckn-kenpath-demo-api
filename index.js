@@ -472,15 +472,23 @@ app.get("/item/:id", async (req, res) => {
   }
 });
 
+res = {
+  "message": {
+    "ack": {
+      "status": "ACK"
+    }
+  }
+}
+
 // Existing webhook routes (maintained for compatibility)
 app.get("/webhook", async (req, res) => {
   const staticResponse = await buildDynamicResponse(req.body);
-  res.json(staticResponse);
-
   (async () => {
     await delay(1000);
-    await forwardToBap(req.query, "webhook-get");
+    await forwardToBap(staticResponse, "webhook-get");
   })();
+  res.send(res);
+
 });
 
 app.post("/webhook", async (req, res) => {
