@@ -480,25 +480,101 @@ const staticAckResponse = {
   }
 }
 
-// Existing webhook routes (maintained for compatibility)
+// Enhanced webhook routes with search functionality
 app.get("/webhook", async (req, res) => {
-  const staticResponse = await buildDynamicResponse(req.body);
-  (async () => {
-    await delay(1000);
-    await forwardToBap(staticResponse, "webhook-get");
-  })();
-  res.send(staticAckResponse);
+  try {
+    if (!dbConnected) {
+      return res.status(503).json({ error: "Database not available" });
+    }
 
+    // Extract search parameter from query
+    const searchQuery = req.query.search || req.query.q || req.query.query;
+    
+    let searchResults = [];
+    
+    if (searchQuery) {
+      // Search database with the provided search parameter
+      const searchParams = {
+        query: searchQuery,
+        category: req.query.category,
+        location: req.query.location,
+        organic: req.query.organic === 'true' ? true : req.query.organic === 'false' ? false : undefined,
+        limit: req.query.limit || 20
+      };
+      
+      console.log('Webhook search parameters:', searchParams);
+      searchResults = await dbService.search(searchParams);
+      console.log(`Found ${searchResults.length} results for webhook search`);
+    } else {
+      // If no search parameter, get all available items
+      searchResults = await dbService.search({ limit: 20 });
+    }
+
+    // Build response with search results
+    const response = await buildDynamicResponse(req.body, searchResults);
+    
+    // Send immediate ACK
+    res.send(staticAckResponse);
+    
+    // Forward to BAP after delay
+    (async () => {
+      await delay(1000);
+      await forwardToBap(response, "webhook-get");
+    })();
+    
+  } catch (error) {
+    console.error('Error in webhook GET:', error);
+    res.status(500).json({ error: 'Failed to process webhook request' });
+  }
 });
 
 app.post("/webhook", async (req, res) => {
-  console.log("Webhook Received:", req.body);
-  res.json({ received: true, body: req.body });
+  try {
+    if (!dbConnected) {
+      return res.status(503).json({ error: "Database not available" });
+    }
 
-  (async () => {
-    await delay(1000);
-    await forwardToBap(req.body, "webhook-post");
-  })();
+    console.log("Webhook Received:", req.body);
+    
+    // Extract search parameter from body or query
+    const searchQuery = req.body.search || req.query.search || req.query.q || req.query.query;
+    
+    let searchResults = [];
+    
+    if (searchQuery) {
+      // Search database with the provided search parameter
+      const searchParams = {
+        query: searchQuery,
+        category: req.body.category || req.query.category,
+        location: req.body.location || req.query.location,
+        organic: req.body.organic === 'true' ? true : req.body.organic === 'false' ? false : undefined,
+        limit: req.body.limit || req.query.limit || 20
+      };
+      
+      console.log('Webhook search parameters:', searchParams);
+      searchResults = await dbService.search(searchParams);
+      console.log(`Found ${searchResults.length} results for webhook search`);
+    } else {
+      // If no search parameter, get all available items
+      searchResults = await dbService.search({ limit: 20 });
+    }
+
+    // Build response with search results
+    const response = await buildDynamicResponse(req.body, searchResults);
+    
+    // Send immediate ACK
+    res.json({ received: true, body: req.body });
+    
+    // Forward to BAP after delay
+    (async () => {
+      await delay(1000);
+      await forwardToBap(response, "webhook-post");
+    })();
+    
+  } catch (error) {
+    console.error('Error in webhook POST:', error);
+    res.status(500).json({ error: 'Failed to process webhook request' });
+  }
 });
 
 // Graceful shutdown
