@@ -33,10 +33,36 @@ beckn-kenpath-demo-api/
 
 ### 1. Prerequisites
 
-- Node.js 16+ 
+**Option A: Docker (Recommended)**
+- Docker Engine 20.10+
+- Docker Compose 2.0+
+
+**Option B: Manual Setup**
+- Node.js 16+
 - PostgreSQL 12+
 
-### 2. Database Setup
+### 2. Quick Start with Docker
+
+```bash
+# Start the application with Docker
+docker-compose up -d
+
+# Check if services are running
+docker-compose ps
+
+# Test the API
+curl http://localhost:3000/health
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+```
+
+For detailed Docker instructions, see [DOCKER_QUICKSTART.md](DOCKER_QUICKSTART.md) or [DOCKER_README.md](DOCKER_README.md).
+
+### 3. Manual Database Setup (Alternative to Docker)
 
 Install and start PostgreSQL, then create a database:
 
@@ -49,7 +75,7 @@ psql -U postgres
 CREATE DATABASE beckn_agriculture;
 ```
 
-### 3. Installation
+### 4. Manual Installation (Alternative to Docker)
 
 ```bash
 # Clone and install dependencies
@@ -78,7 +104,7 @@ npm start
 npm run dev
 ```
 
-### 4. Verify Installation
+### 5. Verify Installation
 
 ```bash
 # Check health
@@ -272,12 +298,42 @@ npm start
 
 ### Docker Deployment
 
+**Development:**
 ```bash
-# Build image
-docker build -t beckn-agriculture-api .
+# Start development environment
+docker-compose up -d
 
-# Run container
-docker run -p 3000:3000 -e DB_HOST=host.docker.internal -e DB_PASSWORD=your_password beckn-agriculture-api
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+```
+
+**Production:**
+```bash
+# Start production environment
+POSTGRES_PASSWORD=your_secure_password docker-compose -f docker-compose.prod.yml up -d
+
+# Check status
+docker-compose -f docker-compose.prod.yml ps
+
+# View logs
+docker-compose -f docker-compose.prod.yml logs -f
+```
+
+**Using the convenience script:**
+```bash
+# Make script executable
+chmod +x docker-scripts.sh
+
+# Development
+./docker-scripts.sh dev-start
+./docker-scripts.sh dev-logs
+./docker-scripts.sh dev-stop
+
+# Production
+POSTGRES_PASSWORD=secure_password ./docker-scripts.sh prod-start
 ```
 
 ## 🧪 Testing
