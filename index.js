@@ -487,6 +487,8 @@ app.get("/webhook", async (req, res) => {
       return res.status(503).json({ error: "Database not available" });
     }
 
+    console.log('Webhook GET received:', JSON.stringify(req.query, null, 2));
+    
     // Extract search parameter from query
     const searchQuery = req.query.search || req.query.q || req.query.query;
     
@@ -499,7 +501,7 @@ app.get("/webhook", async (req, res) => {
         category: req.query.category,
         location: req.query.location,
         organic: req.query.organic === 'true' ? true : req.query.organic === 'false' ? false : undefined,
-        limit: req.query.limit || 20
+        limit: parseInt(req.query.limit) || 20
       };
       
       console.log('Webhook search parameters:', searchParams);
@@ -511,10 +513,10 @@ app.get("/webhook", async (req, res) => {
     }
 
     // Build response with search results
-    const response = await buildDynamicResponse(req.body, searchResults);
+    const response = await buildDynamicResponse({}, searchResults);
     
     // Send immediate ACK
-    res.send(staticAckResponse);
+    res.json(staticAckResponse);
     
     // Forward to BAP after delay
     (async () => {
@@ -534,7 +536,7 @@ app.post("/webhook", async (req, res) => {
       return res.status(503).json({ error: "Database not available" });
     }
 
-    console.log("Webhook Received:", req.body);
+    console.log("Webhook POST received:", JSON.stringify(req.body, null, 2));
     
     // Extract search parameter from body or query
     const searchQuery = req.body.search || req.query.search || req.query.q || req.query.query;
@@ -548,7 +550,7 @@ app.post("/webhook", async (req, res) => {
         category: req.body.category || req.query.category,
         location: req.body.location || req.query.location,
         organic: req.body.organic === 'true' ? true : req.body.organic === 'false' ? false : undefined,
-        limit: req.body.limit || req.query.limit || 20
+        limit: parseInt(req.body.limit || req.query.limit) || 20
       };
       
       console.log('Webhook search parameters:', searchParams);
